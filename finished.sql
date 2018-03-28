@@ -17,6 +17,23 @@ create table players
   primary key (pid)
   );
 
+
+create table locations
+  (locid char(5),
+  city char(20),
+  stadium char(20),
+  capacity int,
+  primary key (locid)
+);
+
+create table teams
+  (tid char(5),
+  locid char(5),
+  tname char(40),
+  primary key (tid),
+  foreign key (locid) references locations(locid)
+);
+
  create table playerteams(
   pid char(5),
   tid char(5),
@@ -24,24 +41,6 @@ create table players
   primary key (pid, tid),
   foreign key (pid) references players(pid),
   foreign key (tid) references teams(tid)
-  );
-
-
-  create table teams
-    (tid char(5),
-    locid char(5),
-    tname char(40),
-    primary key (tid),
-    foreign key (locid) references locations(locid)
-  );
-
-
-  create table locations
-    (locid char(5),
-    city char(20),
-    stadium char(20),
-    capacity int,
-    primary key (locid)
   );
 
 
