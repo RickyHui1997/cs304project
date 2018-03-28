@@ -1,7 +1,7 @@
 drop table players cascade constraints;
-drop table playerteams cascade constraints;
-drop table teams cascade constraints;
 drop table locations cascade constraints;
+drop table teams cascade constraints;
+drop table playerteams cascade constraints;
 drop table matches cascade constraints;
 drop table matchstats cascade constraints;
 drop table playerstats cascade constraints;
@@ -66,7 +66,6 @@ create table teams
     oscore int,
     winloss char(1),
     homeaway char(4),
-
     primary key (mid,tid,opid),
     foreign key (mid) references matches(mid),
     foreign key (tid) references teams(tid),
@@ -80,7 +79,7 @@ create table teams
     ps int,
     primary key (mid, pid),
     foreign key (mid) references matches(mid),
-    foreign key (tid) references teams (tid)
+    foreign key (pid) references players(pid)
     );
 
 
