@@ -5,67 +5,70 @@ drop table playerteams cascade constraints;
 drop table matches cascade constraints;
 drop table matchstats cascade constraints;
 drop table playerstats cascade constraints;
-
+drop view GSWTemp;
+drop view HOUTemp;
+drop view BOSTemp;
+drop view TORTemp;
 
 create table players
-  (pid char(5),
-  pfname char(40),
-  plname char(40),
+  (pid varchar(5),
+  pfname varchar(40),
+  plname varchar(40),
   dob DATE,
   jno int,
-  pos char(4),
+  pos varchar(4),
   primary key (pid)
   );
 
 
 create table locations
-  (locid char(5),
-  city char(20),
-  stadium char(20),
+  (locid varchar(5),
+  city varchar(20),
+  stadium varchar(20),
   capacity int,
   primary key (locid)
 );
 
 create table teams
-  (tid char(5),
-  locid char(5),
-  tname char(40),
+  (tid varchar(5),
+  locid varchar(5),
+  tname varchar(100),
   primary key (tid),
-  foreign key (locid) references locations(locid)
+  foreign key (locid) references locations(locid) ON DELETE SET NULL
 );
 
  create table playerteams(
-  pid char(5),
-  tid char(5),
-  salary char(5),
+  pid varchar(5),
+  tid varchar(5),
+  salary int CONSTRAINT salary_limit CHECK (salary BETWEEN 0 AND 40),
   primary key (pid, tid),
-  foreign key (pid) references players(pid),
+  foreign key (pid) references players(pid) ON DELETE CASCADE,
   foreign key (tid) references teams(tid)
   );
 
 
   create table matches
-    (mid char(5),
-    hid char(5),
-    aid char(5),
-    locid char(5),
+    (mid varchar(5),
+    hid varchar(5),
+    aid varchar(5),
+    locid varchar(5),
     mdate DATE,
-    mtime char(20),
+    mtime varchar(20),
     primary key (mid),
     foreign key (hid) references teams(tid),
     foreign key (aid) references teams(tid),
-    foreign key (locid) references locations (locid)
+    foreign key (locid) references locations (locid) ON DELETE SET NULL
   );
 
 
   create table matchstats
-    (mid char(5),
-    tid char(5),
-    opid char(5),
+    (mid varchar(5),
+    tid varchar(5),
+    opid varchar(5),
     tscore int,
     oscore int,
-    winloss char(1),
-    homeaway char(4),
+    winloss varchar(1),
+    homeaway varchar(4),
     primary key (mid,tid,opid),
     foreign key (mid) references matches(mid),
     foreign key (tid) references teams(tid),
@@ -74,12 +77,12 @@ create table teams
 
 
   create table playerstats
-    (mid char(5),
-    pid char(5),
+    (mid varchar(5),
+    pid varchar(5),
     ps int,
     primary key (mid, pid),
     foreign key (mid) references matches(mid),
-    foreign key (pid) references players(pid)
+    foreign key (pid) references players(pid) ON DELETE CASCADE
     );
 
 
@@ -125,33 +128,33 @@ insert into players values('jv17','Jonas','Valanciunas','1992-05-06','17','c');
 insert into players values('ps43','Pascal','Siakam','1994-04-02','43','6th');
 
 
-insert into playerteams values('sc30','gsw','30m');
-insert into playerteams values('kt11','gsw','20m');
-insert into playerteams values('kd35','gsw','30m');
-insert into playerteams values('dg23','gsw','20m');
-insert into playerteams values('jm01','gsw','10m');
-insert into playerteams values('ai09','gsw','10m');
+insert into playerteams values('sc30','gsw','30');
+insert into playerteams values('kt11','gsw','20');
+insert into playerteams values('kd35','gsw','30');
+insert into playerteams values('dg23','gsw','20');
+insert into playerteams values('jm01','gsw','10');
+insert into playerteams values('ai09','gsw','10');
 
-insert into playerteams values('ki11','bos','30m');
-insert into playerteams values('gh20','bos','30m');
-insert into playerteams values('jb07','bos','10m');
-insert into playerteams values('jt00','bos','10m');
-insert into playerteams values('ah42','bos','20m');
-insert into playerteams values('ms36','bos','10m');
+insert into playerteams values('ki11','bos','30');
+insert into playerteams values('gh20','bos','30');
+insert into playerteams values('jb07','bos','10');
+insert into playerteams values('jt00','bos','10');
+insert into playerteams values('ah42','bos','20');
+insert into playerteams values('ms36','bos','10');
 
-insert into playerteams values('cp03','hou','30m');
-insert into playerteams values('jh13','hou','30m');
-insert into playerteams values('ta01','hou','10m');
-insert into playerteams values('ra33','hou','10m');
-insert into playerteams values('cc15','hou','20m');
-insert into playerteams values('eg10','hou','10m');
+insert into playerteams values('cp03','hou','30');
+insert into playerteams values('jh13','hou','30');
+insert into playerteams values('ta01','hou','10');
+insert into playerteams values('ra33','hou','10');
+insert into playerteams values('cc15','hou','20');
+insert into playerteams values('eg10','hou','10');
 
-insert into playerteams values('kl07','tor','30m');
-insert into playerteams values('dd10','tor','30m');
-insert into playerteams values('np24','tor','10m');
-insert into playerteams values('si09','tor','10m');
-insert into playerteams values('jv17','tor','10m');
-insert into playerteams values('ps43','tor','10m');
+insert into playerteams values('kl07','tor','30');
+insert into playerteams values('dd10','tor','30');
+insert into playerteams values('np24','tor','10');
+insert into playerteams values('si09','tor','10');
+insert into playerteams values('jv17','tor','10');
+insert into playerteams values('ps43','tor','10');
 
 insert into matches values('bt','bos','tor','tdg','2017-03-01','Morning');
 
@@ -334,5 +337,7 @@ insert into playerstats values('hb','ah42','22');
 
 
 
-
-
+CREATE VIEW GSWTemp (pid, pfname, plname) as select p.pid, p.pfname, p.plname from players p, playerteams pt where p.pid = pt.pid and pt.tid = 'gsw';
+CREATE VIEW BOSTemp (pid, pfname, plname) as select p.pid, p.pfname, p.plname from players p, playerteams pt where p.pid = pt.pid and pt.tid = 'bos';
+CREATE VIEW TORTemp (pid, pfname, plname) as select p.pid, p.pfname, p.plname from players p, playerteams pt where p.pid = pt.pid and pt.tid = 'tor';
+CREATE VIEW HOUTemp (pid, pfname, plname) as select p.pid, p.pfname, p.plname from players p, playerteams pt where p.pid = pt.pid and pt.tid = 'hou';
